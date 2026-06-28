@@ -1,0 +1,79 @@
+timesteps_img: [0, 125]
+timesteps_text: [0, 250]
+# 启用集成分类器
+use_meta_classifier: true
+# 选择元分类器类型：logistic, rf, mlp
+meta_classifier_type: logistic
+blur_kernel_size: 11
+system_g: 3
+
+lambda_text: 0.3
+
+gate_network:
+  hidden_dim: 128
+  dropout: 0.2
+  lambda_gate: 0.0001  # 门控网络损失的权重
+
+name: "${dataset}_${exp_setting}_decode_EEGProjectLayer_Cogcap_${vision_backbone}_${text_backbone}"
+
+models:
+  brain_img:
+    target: base.eeg_backbone.EEGProjectLayer
+    params:
+        c_num: 17
+        z_dim: ${z_dim}
+        timesteps: ${timesteps_img}
+      # 图像模态的网络参
+  brain_text:
+    target: base.eeg_backbone.Cogcap
+    params:
+        c_num: 63
+        z_dim: ${z_dim}
+        timesteps: ${timesteps_text}
+      # 文本模态的网络参数
+
+data:
+  data_dir: data/things-eeg/Preprocessed_data_250Hz_whiten
+  selected_ch: None
+  selected_ch_img: ['P7', 'P5', 'P3', 'P1', 'Pz', 'P2', 'P4', 'P6', 'P8', 'PO7', 'PO3', 'POz', 'PO4', 'PO8', 'O1', 'Oz', 'O2']
+  selected_ch_text: ['Fp1', 'Fp2', 'AF7', 'AF3', 'AFz', 'AF4', 'AF8', 'F7', 'F5', 'F3',
+                        'F1', 'F2', 'F4', 'F6', 'F8', 'FT9', 'FT7', 'FC5', 'FC3', 'FC1', 
+                        'FCz', 'FC2', 'FC4', 'FC6', 'FT8', 'FT10', 'T7', 'C5', 'C3', 'C1',
+                        'Cz', 'C2', 'C4', 'C6', 'T8', 'TP9', 'TP7', 'CP5', 'CP3', 'CP1', 
+                        'CPz', 'CP2', 'CP4', 'CP6', 'TP8', 'TP10', 'P7', 'P5', 'P3', 'P1',
+                        'Pz', 'P2', 'P4', 'P6', 'P8', 'PO7', 'PO3', 'POz', 'PO4', 'PO8',
+                        'O1', 'Oz', 'O2']
+  #selected_ch: ['P7', 'P5', 'P3', 'P1', 'Pz', 'P2', 'P4', 'P6', 'P8', 'PO7', 'PO3', 'POz', 'PO4', 'PO8', 'O1', 'Oz', 'O2']
+  #selected_ch: ['TP7', 'P7', 'T7', 'FT7', 'C5', 'CP5', 'F7', 'F5', 'F3', 'FC5', 'FC3', 'FCz']
+  model_type: ViT-H-14
+  # 本地模型路径，默认为None表示从远程加载
+  model_path: None
+  train_batch_size: 256
+  val_batch_size: 200
+  test_batch_size: 200
+  uncertainty_aware: False
+  blur_type:
+    target: base.inpating_data.PerfectCenterFoveaBlur
+    params:
+          h: 224
+          w: 224
+          blur_kernel_size: 17
+          clear_radius: 16.0    
+          decay_rate: 8.0
+  #blur_type:
+   # target: base.inpating_data.UniformBlur
+    #params:
+     # blur_kernel_size: 17
+
+  train_avg: True
+  test_avg: True
+  timesteps_img: ${timesteps_img}
+  timesteps_text: ${timesteps_text}
+
+train:
+  epoch: ${epoch}
+  optimizer: AdamW
+  lr: ${lr}
+  
+
+save_dir: 'exp_joint_test'

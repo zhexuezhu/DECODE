@@ -1,0 +1,40 @@
+# Experiment outputs
+**/exp*/
+
+# Data files (keep directory structure and README)
+data/**/!(*.gitkeep|*.md)
+# Simpler: ignore common data file extensions inside data/
+data/**/*.npy
+data/**/*.npz
+data/**/*.mat
+data/**/*.h5
+data/**/*.hdf5
+data/**/*.pkl
+data/**/*.pickle
+data/**/*.raw
+data/**/*.fif
+data/**/*.edf
+data/**/*.jpg
+data/**/*.png
+data/**/*.jpeg
+data/**/*.tif
+data/**/*.tiff
+
+# Model checkpoints
+**.pth
+**.ckpt
+
+# IDE
+.vscode/
+.vscode/**
+
+# Jupyter
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Python cache
+__pycache__/
+**/__pycache__/
+
+# Lightning logs
+**/lightning_logs/**
